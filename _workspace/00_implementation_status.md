@@ -34,9 +34,9 @@ The goal is to make it obvious:
 | Search Console verification | DONE | HTML verification file deployed and property verified by user |
 | Search Console sitemap | IN_PROGRESS | Submitted, but Search Console currently shows `Could not fetch` despite public 200 XML |
 | Search Console URL indexing requests | IN_PROGRESS | `/` and `/diagnose` requested; guide URLs blocked by daily quota |
-| Local backend implementation | PLANNED | Phase 1 plan/API/verification documents complete |
-| Local backend Phase 1 | PLANNED | Reachability checks not implemented yet |
-| Frontend diagnosis execution | PLANNED | UI shell exists; actual result flow waits for backend |
+| Local backend implementation | DONE | Fastify, SQLite, health, CORS, URL safety, diagnosis API implemented and verified |
+| Local backend Phase 1 | DONE | Reachability checks implemented and verified |
+| Frontend diagnosis execution | DONE | `/diagnose` connects to local backend, submits URL, and renders results |
 | GSC API integration | PLANNED | Later phase after local checks |
 
 ## Canonical URLs
@@ -104,27 +104,27 @@ https://github.com/younhajo88/seo-analysis
 | Local backend implementation plan | DONE | `_workspace/07_local_backend_implementation_plan.md` |
 | Local API contract | DONE | `_workspace/08_local_api_contract.md` |
 | Phase 1 verification plan | DONE | `_workspace/09_phase1_verification_plan.md` |
-| Fastify server scaffold | PLANNED | `server/` |
-| SQLite migration system | PLANNED | `server/db/` |
-| `GET /health` | PLANNED | Phase 1 |
-| CORS allowlist | PLANNED | Phase 1 |
-| server test setup | PLANNED | `tests/server/` |
+| Fastify server scaffold | DONE | `server/app.ts`, `server/index.ts` |
+| SQLite migration system | DONE | `server/db/connection.ts`, `server/db/migrate.ts` |
+| `GET /health` | DONE | `tests/server/app.test.ts` |
+| CORS allowlist | DONE | `tests/server/app.test.ts` |
+| server test setup | DONE | `tests/server/` |
 
 ### Phase 4: Reachability Diagnosis
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| URL safety service | PLANNED | `server/services/url-safety.ts` |
-| redirect-aware fetch service | PLANNED | `server/services/fetch-url.ts` |
-| `reach.http_status` | PLANNED | `server/checks/reach.ts` |
-| `reach.redirect_chain` | PLANNED | `server/checks/reach.ts` |
-| `reach.redirect_loop` | PLANNED | `server/checks/reach.ts` |
-| `reach.final_url_expected` | PLANNED | `server/checks/reach.ts` |
-| `reach.https_available` | PLANNED | `server/checks/reach.ts` |
-| `reach.http_to_https` | PLANNED | `server/checks/reach.ts` |
-| SQLite run/finding persistence | PLANNED | `server/services/diagnosis-store.ts` |
-| `POST /diagnose/url` | PLANNED | `server/routes/diagnose-url.ts` |
-| frontend result UI | PLANNED | `src/components/BackendStatusPanel.tsx` or new components |
+| URL safety service | DONE | `server/services/url-safety.ts`, `tests/server/url-safety.test.ts` |
+| redirect-aware fetch service | DONE | `server/services/fetch-url.ts`, `tests/server/fetch-url.test.ts` |
+| `reach.http_status` | DONE | `server/checks/reach.ts`, `tests/server/reach.test.ts` |
+| `reach.redirect_chain` | DONE | `server/checks/reach.ts`, `tests/server/reach.test.ts` |
+| `reach.redirect_loop` | DONE | `server/checks/reach.ts`, `tests/server/reach.test.ts` |
+| `reach.final_url_expected` | DONE | `server/checks/reach.ts`, `tests/server/reach.test.ts` |
+| `reach.https_available` | DONE | `server/checks/reach.ts`, `tests/server/reach.test.ts` |
+| `reach.http_to_https` | DONE | `server/checks/reach.ts`, `tests/server/reach.test.ts` |
+| SQLite run/finding persistence | DONE | `server/services/diagnosis-store.ts`, `tests/server/diagnosis-store.test.ts` |
+| `POST /diagnose/url` | DONE | `server/app.ts`, `tests/server/diagnose-url-route.test.ts` |
+| frontend result UI | DONE | `src/components/BackendStatusPanel.tsx`, `src/lib/diagnosis-client.ts` |
 
 ### Phase 5: Crawl Policy
 
@@ -215,12 +215,29 @@ https://github.com/younhajo88/seo-analysis
 
 1. Recheck Search Console sitemap status after Google retries processing.
 2. After daily quota resets, request indexing for guide URLs.
-3. Start Phase 3 implementation with TDD:
-   - dependencies and scripts;
-   - server scaffold;
-   - SQLite migration;
-   - `GET /health`;
-   - URL safety tests.
+3. Start Phase 5 crawl policy checks:
+   - `crawl.robots_exists`;
+   - `crawl.robots_googlebot_allowed`;
+   - `crawl.robots_sitemap_declared`.
+
+## Latest Verification
+
+Phase 3 and Phase 4 verification completed on 2026-06-04:
+
+- `npm test`: PASS, 9 files / 31 tests.
+- `npm run server:test`: PASS, 6 files / 22 tests.
+- `npm run lint`: PASS.
+- `npm run build`: PASS.
+- `GET /health` smoke check: PASS.
+- `POST /diagnose/url` smoke check against `https://seo-analysis-two.vercel.app/`: PASS.
+- Browser screenshots saved:
+  - `_workspace/screenshots/phase1-diagnose-disconnected.png`
+  - `_workspace/screenshots/phase1-diagnose-connected.png`
+  - `_workspace/screenshots/phase1-diagnose-result.png`
+
+Known note:
+
+- `npm install` reports 3 moderate vulnerabilities in the dependency tree. Not fixed with `npm audit fix --force` because that can introduce breaking dependency changes.
 
 ## Update Rules
 

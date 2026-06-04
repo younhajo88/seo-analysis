@@ -144,17 +144,51 @@ _workspace/screenshots/phase1-diagnose-connected.png
 _workspace/screenshots/phase1-diagnose-result.png
 ```
 
+## Verification Result
+
+Completed on 2026-06-04.
+
+Commands:
+
+```text
+npm test
+npm run server:test
+npm run lint
+npm run build
+```
+
+Smoke checks:
+
+```text
+GET http://localhost:4317/health
+POST http://localhost:4317/diagnose/url
+```
+
+Browser screenshots:
+
+```text
+_workspace/screenshots/phase1-diagnose-disconnected.png
+_workspace/screenshots/phase1-diagnose-connected.png
+_workspace/screenshots/phase1-diagnose-result.png
+```
+
+Known note:
+
+```text
+npm install reports 3 moderate vulnerabilities. They were not force-fixed because npm audit fix --force can introduce breaking dependency updates.
+```
+
 ## Completion Checklist
 
-- [ ] Server starts on port `4317`.
-- [ ] Health endpoint returns expected payload.
-- [ ] Unsafe URLs are blocked.
-- [ ] Safe URLs produce reachability findings.
-- [ ] Runs and findings persist in SQLite.
-- [ ] Frontend connected state works.
-- [ ] Frontend disconnected state still works.
-- [ ] Tests pass.
-- [ ] Lint passes.
-- [ ] Build passes.
-- [ ] Verification screenshots are saved.
-- [ ] Findings and remaining risks are recorded in this file or a follow-up report.
+- [x] Server starts on port `4317`.
+- [x] Health endpoint returns expected payload.
+- [x] Unsafe URLs are blocked.
+- [x] Safe URLs produce reachability findings.
+- [x] Runs and findings persist in SQLite.
+- [x] Frontend connected state works.
+- [x] Frontend disconnected state still works.
+- [x] Tests pass.
+- [x] Lint passes.
+- [x] Build passes.
+- [x] Verification screenshots are saved.
+- [x] Findings and remaining risks are recorded in this file or a follow-up report.

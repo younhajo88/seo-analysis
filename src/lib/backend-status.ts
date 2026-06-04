@@ -22,25 +22,23 @@ export const backendStatusCopy: Record<
   },
   connected: {
     title: "로컬 진단 서버 연결됨",
-    description: "URL 크롤링과 Search Console 진단을 실행할 준비가 되었습니다.",
+    description: "URL 크롤링과 검색 노출 진단을 실행할 준비가 되었습니다.",
     actionLabel: "진단 실행"
   },
   disconnected: {
     title: "로컬 진단 서버가 필요합니다",
     description:
-      "공개 페이지는 계속 볼 수 있지만, 실제 URL 크롤링과 GSC 조회는 사용자의 PC에서 로컬 진단 서버가 실행 중일 때만 가능합니다.",
+      "공개 페이지는 계속 볼 수 있지만, 실제 URL 크롤링과 Search Console 조회는 사용자 PC에서 로컬 진단 서버가 실행 중일 때만 가능합니다.",
     actionLabel: "로컬 진단 서버 연결 필요"
   },
   misconfigured: {
     title: "서버 주소를 확인해 주세요",
-    description:
-      "설정된 로컬 진단 서버 주소가 올바르지 않거나 지원 버전과 맞지 않습니다.",
+    description: "설정한 로컬 진단 서버 주소가 올바르지 않거나 지원 버전과 맞지 않습니다.",
     actionLabel: "설정 확인 필요"
   },
   error: {
     title: "진단 서버 응답 오류",
-    description:
-      "로컬 서버가 응답했지만 예상한 상태 정보를 반환하지 않았습니다. 서버 로그와 버전을 확인해 주세요.",
+    description: "로컬 서버가 응답했지만 예상한 상태 정보를 반환하지 않았습니다. 서버 로그와 버전을 확인해 주세요.",
     actionLabel: "다시 확인"
   }
 };
