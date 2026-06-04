@@ -46,4 +46,10 @@ describe("public SEO map", () => {
     expect(publicNavItems.some((item) => item.href.startsWith("/guides/"))).toBe(true);
     expect(siteConfig.language).toBe("ko");
   });
+
+  it("defines public brand assets for search and social previews", () => {
+    expect(siteConfig.manifestPath).toBe("/manifest.webmanifest");
+    expect(siteConfig.ogImagePath).toBe("/opengraph-image");
+    expect(siteConfig.themeColor).toMatch(/^#[0-9a-f]{6}$/i);
+  });
 });

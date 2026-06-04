@@ -33,6 +33,9 @@ export const siteConfig = {
   defaultDescription:
     "내 사이트가 Google 검색에 노출될 수 있는지, 어떤 키워드로 노출되는지, 무엇을 먼저 보강해야 하는지 확인하는 로컬 기반 검색 노출 진단 도구입니다.",
   backendUrl: "http://localhost:4317",
+  manifestPath: "/manifest.webmanifest",
+  ogImagePath: "/opengraph-image",
+  themeColor: "#1f6f5b",
   siteUrl:
     process.env.NEXT_PUBLIC_SITE_URL ||
     (process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -280,13 +283,22 @@ export function pageMetadata(path: string): Metadata {
       description: page.description,
       url: absoluteUrl(page.path),
       siteName: siteConfig.name,
+      images: [
+        {
+          url: siteConfig.ogImagePath,
+          width: 1200,
+          height: 630,
+          alt: `${siteConfig.name} 검색 노출 진단`
+        }
+      ],
       locale: "ko_KR",
       type: page.path.startsWith("/guides/") ? "article" : "website"
     },
     twitter: {
       card: "summary_large_image",
       title: `${page.title} | ${siteConfig.name}`,
-      description: page.description
+      description: page.description,
+      images: [siteConfig.ogImagePath]
     }
   };
 }
