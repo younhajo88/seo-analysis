@@ -1,0 +1,4 @@
+interface:
+  display_name: "Search Visibility Harness"
+  short_description: "Coordinate the local search visibility diagnosis workflow"
+  default_prompt: "Use $search-visibility-harness to coordinate the local-first search visibility diagnosis project, including crawler checks, GSC integration, and readiness review."

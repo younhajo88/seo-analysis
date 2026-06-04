@@ -1,0 +1,4 @@
+interface:
+  display_name: "Local SEO Diagnostics"
+  short_description: "Build crawler-based local SEO checks"
+  default_prompt: "Use $local-seo-diagnostics to implement or review local backend SEO checks for crawlability, indexability, metadata, sitemaps, and internal links."

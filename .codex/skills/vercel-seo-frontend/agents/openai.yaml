@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vercel SEO Frontend"
+  short_description: "Build the public indexable frontend"
+  default_prompt: "Use $vercel-seo-frontend to design or implement the Vercel-hosted SEO-friendly frontend and the disabled diagnosis state when the local backend is absent."

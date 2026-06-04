@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diagnostic Release Review"
+  short_description: "Review the diagnosis tool before readiness"
+  default_prompt: "Use $diagnostic-release-review to review the local search visibility diagnosis tool and block readiness on missing crawler, GSC, evidence, or limitation handling."

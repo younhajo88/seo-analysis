@@ -1,0 +1,4 @@
+interface:
+  display_name: "Visibility Growth Analysis"
+  short_description: "Analyze GSC visibility observations"
+  default_prompt: "Use $visibility-growth-analysis to interpret Search Console observations and recommend evidence-based search visibility improvements."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSC Visibility Diagnostics"
+  short_description: "Connect Search Console visibility evidence"
+  default_prompt: "Use $gsc-visibility-diagnostics to implement or review Google Search Console OAuth, Search Analytics, URL Inspection, and keyword visibility diagnosis."
