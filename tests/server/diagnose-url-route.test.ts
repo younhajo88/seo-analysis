@@ -52,7 +52,13 @@ describe("POST /diagnose/url", () => {
     const app = buildApp({
       databasePath: tempDbPath(),
       assertSafeUrl: async (input) => new URL(input),
-      fetchImpl: async () => new Response("ok", { status: 200 })
+      fetchImpl: async (url) => {
+        if (url.toString().endsWith("/robots.txt")) {
+          return new Response("User-agent: *\nAllow: /\nSitemap: https://example.com/sitemap.xml\n", { status: 200 });
+        }
+
+        return new Response("ok", { status: 200 });
+      }
     });
 
     const response = await app.inject({
@@ -80,5 +86,73 @@ describe("POST /diagnose/url", () => {
       redirects: []
     });
     expect(body.findings.map((finding: { checkId: string }) => finding.checkId)).toContain("reach.http_status");
+    expect(body.findings.map((finding: { checkId: string }) => finding.checkId)).toContain("crawl.robots_exists");
+    expect(body.findings.map((finding: { checkId: string }) => finding.checkId)).toContain(
+      "crawl.robots_googlebot_allowed"
+    );
+    expect(body.findings.map((finding: { checkId: string }) => finding.checkId)).toContain(
+      "crawl.robots_sitemap_declared"
+    );
+  });
+
+  it("reports crawl failures when robots.txt blocks Googlebot", async () => {
+    const app = buildApp({
+      databasePath: tempDbPath(),
+      assertSafeUrl: async (input) => new URL(input),
+      fetchImpl: async (url) => {
+        if (url.toString().endsWith("/robots.txt")) {
+          return new Response("User-agent: Googlebot\nDisallow: /\n", { status: 200 });
+        }
+
+        return new Response("ok", { status: 200 });
+      }
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/diagnose/url",
+      payload: { url: "https://example.com/" }
+    });
+    await app.close();
+
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.run.overallStatus).toBe("FAIL");
+    expect(body.findings.find((finding: { checkId: string }) => finding.checkId === "crawl.robots_googlebot_allowed"))
+      .toMatchObject({
+        status: "FAIL"
+      });
+  });
+
+  it("keeps reach findings when robots.txt cannot be fetched", async () => {
+    const app = buildApp({
+      databasePath: tempDbPath(),
+      assertSafeUrl: async (input) => new URL(input),
+      fetchImpl: async (url) => {
+        if (url.toString().endsWith("/robots.txt")) {
+          throw new Error("robots fetch failed");
+        }
+
+        return new Response("ok", { status: 200 });
+      }
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/diagnose/url",
+      payload: { url: "https://example.com/" }
+    });
+    await app.close();
+
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.findings.find((finding: { checkId: string }) => finding.checkId === "reach.http_status")).toMatchObject({
+      status: "PASS"
+    });
+    expect(body.findings.find((finding: { checkId: string }) => finding.checkId === "crawl.robots_exists")).toMatchObject({
+      status: "UNAVAILABLE"
+    });
   });
 });

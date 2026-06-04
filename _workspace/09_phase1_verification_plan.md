@@ -178,6 +178,41 @@ Known note:
 npm install reports 3 moderate vulnerabilities. They were not force-fixed because npm audit fix --force can introduce breaking dependency updates.
 ```
 
+## Phase 5 Extension Verification Result
+
+Completed on 2026-06-04.
+
+Added crawl policy checks:
+
+```text
+crawl.robots_exists
+crawl.robots_googlebot_allowed
+crawl.robots_sitemap_declared
+```
+
+Commands:
+
+```text
+npm test
+npm run server:test
+npm run lint
+npm run build
+```
+
+Smoke check:
+
+```text
+POST http://localhost:4317/diagnose/url
+```
+
+Result against `https://seo-analysis-two.vercel.app/`:
+
+```text
+crawl.robots_exists: PASS
+crawl.robots_googlebot_allowed: PASS
+crawl.robots_sitemap_declared: PASS
+```
+
 ## Completion Checklist
 
 - [x] Server starts on port `4317`.

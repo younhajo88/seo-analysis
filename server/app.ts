@@ -1,6 +1,11 @@
 import Fastify from "fastify";
 import type { FastifyInstance } from "fastify";
 import { join } from "node:path";
+import {
+  buildCrawlPolicyFindings,
+  buildUnavailableCrawlPolicyFindings,
+  robotsUrlForTarget
+} from "./checks/crawl-policy";
 import { buildReachFindings } from "./checks/reach";
 import { defaultAllowedOrigins, serverVersion, type ServerConfig } from "./config";
 import { openDatabase } from "./db/connection";
@@ -71,7 +76,12 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
         assertSafeUrl: options.assertSafeUrl,
         fetchImpl: options.fetchImpl
       });
-      const findings = buildReachFindings(fetchResult);
+      const robotsUrl = robotsUrlForTarget(fetchResult.finalUrl);
+      const crawlFindings = await buildCrawlFindings(fetchResult.finalUrl, robotsUrl, {
+        assertSafeUrl: options.assertSafeUrl,
+        fetchImpl: options.fetchImpl
+      });
+      const findings = [...buildReachFindings(fetchResult), ...crawlFindings];
       const overallStatus = summarizeOverallStatus(findings.map((finding) => finding.status));
       const stored = createDiagnosisRun(db, {
         targetUrl: fetchResult.targetUrl,
@@ -117,6 +127,19 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
   });
 
   return app;
+}
+
+async function buildCrawlFindings(targetUrl: string, robotsUrl: string, options: FetchUrlOptions) {
+  try {
+    const robotsResult = await fetchUrl(robotsUrl, options);
+    return buildCrawlPolicyFindings(targetUrl, robotsResult);
+  } catch (error) {
+    return buildUnavailableCrawlPolicyFindings(
+      targetUrl,
+      robotsUrl,
+      error instanceof Error ? error.message : "robots.txt fetch failed"
+    );
+  }
 }
 
 function summarizeOverallStatus(statuses: FindingStatus[]): FindingStatus {

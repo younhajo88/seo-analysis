@@ -35,7 +35,7 @@ The goal is to make it obvious:
 | Search Console sitemap | IN_PROGRESS | Submitted, but Search Console currently shows `Could not fetch` despite public 200 XML |
 | Search Console URL indexing requests | IN_PROGRESS | `/` and `/diagnose` requested; guide URLs blocked by daily quota |
 | Local backend implementation | DONE | Fastify, SQLite, health, CORS, URL safety, diagnosis API implemented and verified |
-| Local backend Phase 1 | DONE | Reachability checks implemented and verified |
+| Local backend Phase 1 | DONE | Reachability and crawl policy checks implemented and verified |
 | Frontend diagnosis execution | DONE | `/diagnose` connects to local backend, submits URL, and renders results |
 | GSC API integration | PLANNED | Later phase after local checks |
 
@@ -130,9 +130,9 @@ https://github.com/younhajo88/seo-analysis
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| `crawl.robots_exists` | PLANNED | later |
-| `crawl.robots_googlebot_allowed` | PLANNED | later |
-| `crawl.robots_sitemap_declared` | PLANNED | later |
+| `crawl.robots_exists` | DONE | `server/checks/crawl-policy.ts`, `tests/server/crawl-policy.test.ts` |
+| `crawl.robots_googlebot_allowed` | DONE | `server/checks/crawl-policy.ts`, `tests/server/crawl-policy.test.ts` |
+| `crawl.robots_sitemap_declared` | DONE | `server/checks/crawl-policy.ts`, `tests/server/crawl-policy.test.ts` |
 
 ### Phase 6: Indexability HTML/Header
 
@@ -215,10 +215,14 @@ https://github.com/younhajo88/seo-analysis
 
 1. Recheck Search Console sitemap status after Google retries processing.
 2. After daily quota resets, request indexing for guide URLs.
-3. Start Phase 5 crawl policy checks:
-   - `crawl.robots_exists`;
-   - `crawl.robots_googlebot_allowed`;
-   - `crawl.robots_sitemap_declared`.
+3. Start Phase 6 indexability checks:
+   - `index.meta_noindex`;
+   - `index.meta_nofollow`;
+   - `index.x_robots_noindex`;
+   - `index.canonical_exists`;
+   - `index.canonical_accessible`;
+   - `index.canonical_expected`;
+   - `render.initial_content_present`.
 
 ## Latest Verification
 
@@ -238,6 +242,17 @@ Phase 3 and Phase 4 verification completed on 2026-06-04:
 Known note:
 
 - `npm install` reports 3 moderate vulnerabilities in the dependency tree. Not fixed with `npm audit fix --force` because that can introduce breaking dependency changes.
+
+Phase 5 verification completed on 2026-06-04:
+
+- `npm test`: PASS, 10 files / 37 tests.
+- `npm run server:test`: PASS, 7 files / 28 tests.
+- `npm run lint`: PASS.
+- `npm run build`: PASS.
+- `POST /diagnose/url` smoke check against `https://seo-analysis-two.vercel.app/`: PASS with crawl findings:
+  - `crawl.robots_exists`: PASS.
+  - `crawl.robots_googlebot_allowed`: PASS.
+  - `crawl.robots_sitemap_declared`: PASS.
 
 ## Update Rules
 
