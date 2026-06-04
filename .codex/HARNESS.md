@@ -44,6 +44,7 @@ Use a supervisor workflow:
 
 Always preserve alignment with:
 
+- `_workspace/00_implementation_status.md`
 - `docs/search-visibility-diagnosis.md`
 - `docs/search-visibility-diagnosis.ko.md`
 
@@ -58,3 +59,4 @@ Always preserve alignment with:
 - Do not treat backlink, domain authority, SERP rank tracking, or competitor comparison as core visibility checks.
 - Separate observed facts from hypotheses.
 - Separate crawl/index blockers from ranking-support recommendations.
+- Update `_workspace/00_implementation_status.md` whenever a phase, verification result, deployment, Search Console state, or implementation status changes.

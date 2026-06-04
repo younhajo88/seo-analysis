@@ -10,6 +10,7 @@ description: Use when planning, implementing, or reviewing this local-first sear
 Read:
 
 - `.codex/HARNESS.md`
+- `_workspace/00_implementation_status.md`
 - `docs/search-visibility-diagnosis.md`
 - `.codex/roles/diagnosis-product-architect.md`
 
@@ -62,3 +63,7 @@ Every report should include:
 - evidence
 - recommendation
 - limitation, if the check is partial or unavailable
+
+## Status Board Rule
+
+Update `_workspace/00_implementation_status.md` in the same change whenever work changes phase status, verification status, Search Console state, deployment state, or remaining work.

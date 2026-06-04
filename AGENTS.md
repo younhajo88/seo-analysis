@@ -18,6 +18,7 @@ Do not treat this as a generic SEO score checker. Search visibility comes first.
 
 Before planning or implementing substantial work, read:
 
+- `_workspace/00_implementation_status.md`
 - `docs/search-visibility-diagnosis.md`
 - `docs/search-visibility-diagnosis.ko.md`
 - `.codex/HARNESS.md`
@@ -103,6 +104,7 @@ For narrower work:
 
 - Preserve user changes. Do not revert unrelated work.
 - Prefer the repository's existing stack and patterns once implementation begins.
+- Keep `_workspace/00_implementation_status.md` current. Whenever implementation, verification, deployment, Search Console work, or planning changes project state, update the status document in the same change.
 - Keep crawler limits explicit: max URLs, max depth, timeout, same-site boundaries, and URL normalization.
 - Respect `robots.txt` by default. Allow diagnostic override only when the user owns the site and explicitly requests it.
 - Never invent Search Console, PageSpeed, CrUX, backlink, SERP, or analytics data.
