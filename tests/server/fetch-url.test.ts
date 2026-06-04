@@ -21,7 +21,10 @@ describe("fetch url", () => {
     const result = await fetchUrl("https://example.com/", {
       assertSafeUrl: okSafety,
       fetchImpl: fakeFetch({
-        "https://example.com/": new Response("hello", { status: 200 })
+        "https://example.com/": new Response("hello", {
+          status: 200,
+          headers: { "x-robots-tag": "noindex" }
+        })
       })
     });
 
@@ -29,6 +32,7 @@ describe("fetch url", () => {
     expect(result.finalUrl).toBe("https://example.com/");
     expect(result.redirects).toEqual([]);
     expect(result.bodyText).toBe("hello");
+    expect(result.headers["x-robots-tag"]).toBe("noindex");
   });
 
   it("follows redirects manually and records the chain", async () => {

@@ -213,6 +213,59 @@ crawl.robots_googlebot_allowed: PASS
 crawl.robots_sitemap_declared: PASS
 ```
 
+## Phase 6-12 Extension Verification Result
+
+Completed on 2026-06-04.
+
+Added local automatic checks:
+
+```text
+index.*
+render.initial_content_present
+sitemap.*
+page.*
+structure.internal_links
+structure.broken_internal_links
+```
+
+Added explicit unavailable/manual findings:
+
+```text
+structure.click_depth: MANUAL
+structure.orphan_candidates: UNAVAILABLE
+perf.*: UNAVAILABLE until PageSpeed/CrUX is configured
+gsc.* and exposure.*: UNAVAILABLE until Search Console OAuth/property is connected
+authority.* and serp.*: UNAVAILABLE / Payment required
+page.intent_match and page.information_completeness: MANUAL
+```
+
+Commands:
+
+```text
+npm test
+npm run server:test
+npm run lint
+npm run build
+```
+
+Smoke check:
+
+```text
+POST http://localhost:4317/diagnose/url
+```
+
+Representative result against `https://seo-analysis-two.vercel.app/`:
+
+```text
+index.meta_noindex: PASS
+sitemap.exists: PASS
+page.title_exists: PASS
+structure.internal_links: PASS
+perf.pagespeed_available: UNAVAILABLE
+gsc.property_connected: UNAVAILABLE
+authority.backlinks: UNAVAILABLE / Payment required
+```
+
 ## Completion Checklist
 
 - [x] Server starts on port `4317`.

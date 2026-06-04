@@ -2,11 +2,20 @@ import Fastify from "fastify";
 import type { FastifyInstance } from "fastify";
 import { join } from "node:path";
 import {
+  buildGscUnavailableFindings,
+  buildPaidAndHumanFindings,
+  buildPerformanceUnavailableFindings
+} from "./checks/external-placeholders";
+import {
   buildCrawlPolicyFindings,
   buildUnavailableCrawlPolicyFindings,
+  extractSitemapUrlsFromRobots,
   robotsUrlForTarget
 } from "./checks/crawl-policy";
+import { buildHtmlPageFindings } from "./checks/html-page";
 import { buildReachFindings } from "./checks/reach";
+import { buildSitemapFindings, parseSitemap, type SitemapUrlStatus } from "./checks/sitemap";
+import { buildSiteStructureFindings, extractInternalLinks, type InternalLinkStatus } from "./checks/site-structure";
 import { defaultAllowedOrigins, serverVersion, type ServerConfig } from "./config";
 import { openDatabase } from "./db/connection";
 import { migrateDatabase } from "./db/migrate";
@@ -77,11 +86,28 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
         fetchImpl: options.fetchImpl
       });
       const robotsUrl = robotsUrlForTarget(fetchResult.finalUrl);
-      const crawlFindings = await buildCrawlFindings(fetchResult.finalUrl, robotsUrl, {
+      const crawlResult = await buildCrawlResult(fetchResult.finalUrl, robotsUrl, {
         assertSafeUrl: options.assertSafeUrl,
         fetchImpl: options.fetchImpl
       });
-      const findings = [...buildReachFindings(fetchResult), ...crawlFindings];
+      const sitemapFindings = await buildSitemapResult(fetchResult.finalUrl, crawlResult.sitemapUrls, {
+        assertSafeUrl: options.assertSafeUrl,
+        fetchImpl: options.fetchImpl
+      });
+      const structureFindings = await buildStructureResult(fetchResult, {
+        assertSafeUrl: options.assertSafeUrl,
+        fetchImpl: options.fetchImpl
+      });
+      const findings = [
+        ...buildReachFindings(fetchResult),
+        ...crawlResult.findings,
+        ...sitemapFindings,
+        ...buildHtmlPageFindings(fetchResult),
+        ...structureFindings,
+        ...buildPerformanceUnavailableFindings(fetchResult.finalUrl),
+        ...buildGscUnavailableFindings(fetchResult.finalUrl),
+        ...buildPaidAndHumanFindings(fetchResult.finalUrl)
+      ];
       const overallStatus = summarizeOverallStatus(findings.map((finding) => finding.status));
       const stored = createDiagnosisRun(db, {
         targetUrl: fetchResult.targetUrl,
@@ -129,17 +155,93 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
   return app;
 }
 
-async function buildCrawlFindings(targetUrl: string, robotsUrl: string, options: FetchUrlOptions) {
+async function buildCrawlResult(targetUrl: string, robotsUrl: string, options: FetchUrlOptions) {
   try {
     const robotsResult = await fetchUrl(robotsUrl, options);
-    return buildCrawlPolicyFindings(targetUrl, robotsResult);
+    return {
+      findings: buildCrawlPolicyFindings(targetUrl, robotsResult),
+      sitemapUrls: extractSitemapUrlsFromRobots(robotsResult.bodyText)
+    };
   } catch (error) {
-    return buildUnavailableCrawlPolicyFindings(
+    return {
+      findings: buildUnavailableCrawlPolicyFindings(
+        targetUrl,
+        robotsUrl,
+        error instanceof Error ? error.message : "robots.txt fetch failed"
+      ),
+      sitemapUrls: []
+    };
+  }
+}
+
+async function buildSitemapResult(targetUrl: string, sitemapUrls: string[], options: FetchUrlOptions) {
+  const sitemapUrl = sitemapUrls[0];
+
+  if (!sitemapUrl) {
+    return buildSitemapFindings(targetUrl, null, []);
+  }
+
+  try {
+    const sitemapResult = await fetchUrl(sitemapUrl, options);
+    const parsed = parseSitemap(sitemapResult.bodyText);
+    const checkedUrls: SitemapUrlStatus[] = [];
+
+    for (const entry of parsed.urls.slice(0, 10)) {
+      try {
+        const checked = await fetchUrl(entry.loc, options);
+        checkedUrls.push({
+          loc: entry.loc,
+          statusCode: checked.statusCode,
+          finalUrl: checked.finalUrl
+        });
+      } catch {
+        checkedUrls.push({
+          loc: entry.loc,
+          statusCode: 0,
+          finalUrl: entry.loc
+        });
+      }
+    }
+
+    return buildSitemapFindings(targetUrl, sitemapResult, checkedUrls);
+  } catch (error) {
+    return buildSitemapFindings(
       targetUrl,
-      robotsUrl,
-      error instanceof Error ? error.message : "robots.txt fetch failed"
+      {
+        targetUrl: sitemapUrl,
+        finalUrl: sitemapUrl,
+        statusCode: 0,
+        redirects: [],
+        headers: {},
+        bodyText: error instanceof Error ? error.message : "sitemap fetch failed",
+        truncated: false
+      },
+      []
     );
   }
+}
+
+async function buildStructureResult(pageResult: Awaited<ReturnType<typeof fetchUrl>>, options: FetchUrlOptions) {
+  const checkedLinks: InternalLinkStatus[] = [];
+
+  for (const url of extractInternalLinks(pageResult).slice(0, 10)) {
+    try {
+      const checked = await fetchUrl(url, options);
+      checkedLinks.push({
+        url,
+        statusCode: checked.statusCode,
+        finalUrl: checked.finalUrl
+      });
+    } catch {
+      checkedLinks.push({
+        url,
+        statusCode: 0,
+        finalUrl: url
+      });
+    }
+  }
+
+  return buildSiteStructureFindings(pageResult, checkedLinks);
 }
 
 function summarizeOverallStatus(statuses: FindingStatus[]): FindingStatus {

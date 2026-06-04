@@ -11,6 +11,7 @@ export type FetchUrlResult = {
   finalUrl: string;
   statusCode: number;
   redirects: RedirectHop[];
+  headers: Record<string, string>;
   bodyText: string;
   truncated: boolean;
 };
@@ -115,6 +116,7 @@ async function buildResult(
     finalUrl,
     statusCode: response.status,
     redirects,
+    headers: Object.fromEntries([...response.headers.entries()].map(([key, value]) => [key.toLowerCase(), value])),
     bodyText,
     truncated
   };

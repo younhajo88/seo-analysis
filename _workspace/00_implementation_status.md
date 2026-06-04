@@ -35,7 +35,7 @@ The goal is to make it obvious:
 | Search Console sitemap | IN_PROGRESS | Submitted, but Search Console currently shows `Could not fetch` despite public 200 XML |
 | Search Console URL indexing requests | IN_PROGRESS | `/` and `/diagnose` requested; guide URLs blocked by daily quota |
 | Local backend implementation | DONE | Fastify, SQLite, health, CORS, URL safety, diagnosis API implemented and verified |
-| Local backend Phase 1 | DONE | Reachability and crawl policy checks implemented and verified |
+| Local backend Phase 1 | DONE | Reachability, crawl policy, indexability, sitemap, page basics, structure, and unavailable placeholders implemented and verified |
 | Frontend diagnosis execution | DONE | `/diagnose` connects to local backend, submits URL, and renders results |
 | GSC API integration | PLANNED | Later phase after local checks |
 
@@ -138,91 +138,86 @@ https://github.com/younhajo88/seo-analysis
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| `index.meta_noindex` | PLANNED | later |
-| `index.meta_nofollow` | PLANNED | later |
-| `index.x_robots_noindex` | PLANNED | later |
-| `index.canonical_exists` | PLANNED | later |
-| `index.canonical_accessible` | PLANNED | later |
-| `index.canonical_expected` | PLANNED | later |
-| `render.initial_content_present` | PLANNED | later |
+| `index.meta_noindex` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `index.meta_nofollow` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `index.x_robots_noindex` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `index.canonical_exists` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `index.canonical_accessible` | DONE | Syntax/presence result implemented; separate fetch is reported as `MANUAL` |
+| `index.canonical_expected` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `render.initial_content_present` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
 
 ### Phase 7: Sitemap Discovery
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| `sitemap.exists` | PLANNED | later |
-| `sitemap.fetchable` | PLANNED | later |
-| `sitemap.index_supported` | PLANNED | later |
-| `sitemap.urls_status` | PLANNED | later |
-| `sitemap.urls_redirect` | PLANNED | later |
-| `sitemap.lastmod_present` | PLANNED | later |
-| `sitemap.canonical_consistency` | PLANNED | later |
+| `sitemap.exists` | DONE | `server/checks/sitemap.ts`, `tests/server/sitemap.test.ts` |
+| `sitemap.fetchable` | DONE | `server/checks/sitemap.ts`, `tests/server/sitemap.test.ts` |
+| `sitemap.index_supported` | DONE | `server/checks/sitemap.ts`, `tests/server/sitemap.test.ts` |
+| `sitemap.urls_status` | DONE | Checks up to 10 sitemap URLs per run |
+| `sitemap.urls_redirect` | DONE | Checks up to 10 sitemap URLs per run |
+| `sitemap.lastmod_present` | DONE | `server/checks/sitemap.ts`, `tests/server/sitemap.test.ts` |
+| `sitemap.canonical_consistency` | DONE | Checks whether target final URL is listed |
 
 ### Phase 8: Page Basics
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| `page.title_exists` | PLANNED | later |
-| `page.title_length` | PLANNED | later |
-| `page.description_exists` | PLANNED | later |
-| `page.description_length` | PLANNED | later |
-| `page.h1_exists` | PLANNED | later |
-| `page.h1_count` | PLANNED | later |
-| `page.image_alt` | PLANNED | later |
-| `page.structured_data_exists` | PLANNED | later |
-| `page.schema_valid_jsonld` | PLANNED | later |
+| `page.title_exists` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `page.title_length` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `page.description_exists` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `page.description_length` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `page.h1_exists` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `page.h1_count` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `page.image_alt` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `page.structured_data_exists` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
+| `page.schema_valid_jsonld` | DONE | `server/checks/html-page.ts`, `tests/server/html-page.test.ts` |
 
 ### Phase 9: Site Structure
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| `structure.internal_links` | PLANNED | later |
-| `structure.broken_internal_links` | PLANNED | later |
-| `structure.click_depth` | PLANNED | later |
-| `structure.orphan_candidates` | PLANNED | later |
+| `structure.internal_links` | DONE | `server/checks/site-structure.ts`, `tests/server/site-structure.test.ts` |
+| `structure.broken_internal_links` | DONE | Checks up to 10 internal links per run |
+| `structure.click_depth` | DONE | Reported as `MANUAL`; full site crawl required |
+| `structure.orphan_candidates` | DONE | Reported as `UNAVAILABLE`; crawl-vs-sitemap comparison required |
 
 ### Phase 10: Free API Performance
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| PageSpeed API configuration | PLANNED | later |
-| `perf.pagespeed_available` | PLANNED | later |
-| `perf.lcp` | PLANNED | later |
-| `perf.inp` | PLANNED | later |
-| `perf.cls` | PLANNED | later |
-| `perf.lighthouse_seo` | PLANNED | later |
-| `perf.lighthouse_accessibility` | PLANNED | later |
+| PageSpeed API configuration | DONE | Placeholder findings implemented; API execution deferred until credentials/config |
+| `perf.pagespeed_available` | DONE | `UNAVAILABLE` until PageSpeed API is configured |
+| `perf.lcp` | DONE | `UNAVAILABLE` until PageSpeed/CrUX data is configured |
+| `perf.inp` | DONE | `UNAVAILABLE` until PageSpeed/CrUX data is configured |
+| `perf.cls` | DONE | `UNAVAILABLE` until PageSpeed/CrUX data is configured |
+| `perf.lighthouse_seo` | DONE | `UNAVAILABLE` until PageSpeed API is configured |
+| `perf.lighthouse_accessibility` | DONE | `UNAVAILABLE` until PageSpeed API is configured |
 
 ### Phase 11: Google Search Console API
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| GSC OAuth design | PLANNED | later |
-| property selection | PLANNED | later |
-| URL Inspection API | PLANNED | later |
-| Search Analytics API | PLANNED | later |
-| target keyword vs actual query comparison | PLANNED | later |
+| GSC OAuth design | PLANNED | Requires Google OAuth client setup |
+| property selection | DONE | Reported as `UNAVAILABLE` until a verified property is connected |
+| URL Inspection API | DONE | Placeholder findings implemented until OAuth/property is connected |
+| Search Analytics API | DONE | Placeholder findings implemented until OAuth/property is connected |
+| target keyword vs actual query comparison | DONE | Placeholder `exposure.search_queries` implemented until Search Analytics data is connected |
 
 ### Phase 12: Unavailable/Paid/Human Findings
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| paid-data unavailable placeholders | PLANNED | later |
-| human judgment placeholders | PLANNED | later |
-| report grouping for unavailable checks | PLANNED | later |
+| paid-data unavailable placeholders | DONE | `authority.*`, `serp.*` report `Payment required` |
+| human judgment placeholders | DONE | `page.intent_match`, `page.information_completeness` report `MANUAL` |
+| report grouping for unavailable checks | DONE | `server/checks/external-placeholders.ts` |
 
 ## Next Actions
 
 1. Recheck Search Console sitemap status after Google retries processing.
 2. After daily quota resets, request indexing for guide URLs.
-3. Start Phase 6 indexability checks:
-   - `index.meta_noindex`;
-   - `index.meta_nofollow`;
-   - `index.x_robots_noindex`;
-   - `index.canonical_exists`;
-   - `index.canonical_accessible`;
-   - `index.canonical_expected`;
-   - `render.initial_content_present`.
+3. Configure Google OAuth client credentials for the future real GSC integration.
+4. Decide whether to enable live PageSpeed API calls or keep performance checks as explicit unavailable findings.
+5. Add a bounded multi-page crawl if click depth and orphan candidates should become automatic checks.
 
 ## Latest Verification
 
@@ -253,6 +248,21 @@ Phase 5 verification completed on 2026-06-04:
   - `crawl.robots_exists`: PASS.
   - `crawl.robots_googlebot_allowed`: PASS.
   - `crawl.robots_sitemap_declared`: PASS.
+
+Phase 6 through Phase 12 implementation pass completed on 2026-06-04:
+
+- `npm test`: PASS, 14 files / 51 tests.
+- `npm run server:test`: PASS, 11 files / 42 tests.
+- `npm run lint`: PASS.
+- `npm run build`: PASS.
+- `POST /diagnose/url` smoke check against `https://seo-analysis-two.vercel.app/`: PASS with representative findings:
+  - `index.meta_noindex`: PASS.
+  - `sitemap.exists`: PASS.
+  - `page.title_exists`: PASS.
+  - `structure.internal_links`: PASS.
+  - `perf.pagespeed_available`: UNAVAILABLE.
+  - `gsc.property_connected`: UNAVAILABLE.
+  - `authority.backlinks`: UNAVAILABLE / Payment required.
 
 ## Update Rules
 

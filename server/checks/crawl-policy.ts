@@ -92,6 +92,10 @@ export function robotsUrlForTarget(targetUrl: string) {
   return `${url.origin}/robots.txt`;
 }
 
+export function extractSitemapUrlsFromRobots(bodyText: string) {
+  return parseRobotsTxt(bodyText).sitemapUrls;
+}
+
 export function buildUnavailableCrawlPolicyFindings(targetUrl: string, robotsUrl: string, reason: string): DiagnosisFinding[] {
   return [
     finding(
