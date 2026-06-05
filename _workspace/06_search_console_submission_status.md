@@ -34,6 +34,17 @@ Current Search Console table status:
 Could not fetch
 ```
 
+Observed in the Sitemaps report on 2026-06-05:
+
+```text
+Submitted sitemap: /sitemap.xml
+Submitted: Unknown
+Last read: 2026-06-04
+Status: Could not fetch
+Discovered pages: 0
+Discovered videos: 0
+```
+
 Independent verification from outside Search Console:
 
 ```text
@@ -54,6 +65,7 @@ Interpretation:
 - Search Console may need time to retry processing.
 - Recheck the Sitemaps report later before changing the sitemap implementation.
 - URL Inspection for the root URL currently reports no detected referring sitemap. This does not block indexing by itself, but it means Google has not associated the indexed root URL with the submitted sitemap in the visible inspection data yet.
+- The Sitemaps report state is not the desired final state, but the live public sitemap response is healthy, so this is currently tracked as a Search Console processing/retry issue rather than a confirmed site implementation problem.
 
 ## URL Inspection And Indexing Requests
 
