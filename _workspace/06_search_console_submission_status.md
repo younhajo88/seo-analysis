@@ -6,10 +6,18 @@
 https://seo-analysis-two.vercel.app/
 ```
 
-## Date
+## Dates
+
+Initial submission work:
 
 ```text
 2026-06-04
+```
+
+Latest indexing retry:
+
+```text
+2026-06-05
 ```
 
 ## Sitemap
@@ -23,7 +31,7 @@ Submitted in Search Console:
 Current Search Console table status:
 
 ```text
-가져올 수 없음
+Could not fetch
 ```
 
 Independent verification from outside Search Console:
@@ -57,16 +65,24 @@ Completed:
 
 Checked but not requested due to quota:
 
-| URL | Live Test | Indexing Request |
-| --- | --- | --- |
-| `https://seo-analysis-two.vercel.app/guides/search-visibility` | URL can be indexed | Blocked by daily quota |
+| URL | Date | Search Console State | Indexing Request |
+| --- | --- | --- | --- |
+| `https://seo-analysis-two.vercel.app/guides/search-visibility` | 2026-06-04 | URL can be indexed | Blocked by daily quota |
+| `https://seo-analysis-two.vercel.app/guides/search-visibility` | 2026-06-05 | URL is not on Google | Blocked again by daily quota |
 
-Search Console message:
+Search Console message observed on 2026-06-05:
 
 ```text
-할당량 초과
-일일 할당량을 초과하여 이 요청을 처리할 수 없습니다. 내일 다시 제출해 주세요.
+Quota exceeded
+Daily quota exceeded. Please submit again tomorrow.
 ```
+
+Interpretation:
+
+- The Search Console property is accessible and authenticated.
+- The guide URL is still known as not indexed.
+- The indexing request quota had not reset for this property/account at the time of the 2026-06-05 retry.
+- The quota reset may not follow the user's local Asia/Seoul calendar day.
 
 ## Next Manual/Browser-Assisted Step
 

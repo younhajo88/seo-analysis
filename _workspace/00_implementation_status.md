@@ -33,7 +33,7 @@ The goal is to make it obvious:
 | Public frontend SEO | DONE | metadata, sitemap, robots, canonical, JSON-LD, icons, OG image, manifest |
 | Search Console verification | DONE | HTML verification file deployed and property verified by user |
 | Search Console sitemap | IN_PROGRESS | Submitted, but Search Console currently shows `Could not fetch` despite public 200 XML |
-| Search Console URL indexing requests | IN_PROGRESS | `/` and `/diagnose` requested; guide URLs blocked by daily quota |
+| Search Console URL indexing requests | IN_PROGRESS | `/` and `/diagnose` requested; guide URL retry on 2026-06-05 still blocked by daily quota |
 | Local backend implementation | DONE | Fastify, SQLite, health, CORS, URL safety, diagnosis API implemented and verified |
 | Local backend Phase 1 | DONE | Reachability, crawl policy, indexability, sitemap, page basics, structure, and unavailable placeholders implemented and verified |
 | Frontend diagnosis execution | DONE | `/diagnose` connects to local backend, submits URL, and renders results |
@@ -95,7 +95,7 @@ https://github.com/younhajo88/seo-analysis
 | `/` indexing request | DONE | Requested |
 | `/diagnose` URL Inspection live test | DONE | URL can be indexed |
 | `/diagnose` indexing request | DONE | Requested |
-| guide URL indexing requests | BLOCKED | Daily quota exceeded; retry next day |
+| guide URL indexing requests | BLOCKED | Daily quota exceeded again on 2026-06-05; retry after Google quota reset |
 
 ### Phase 3: Local Backend Foundation
 
@@ -214,7 +214,7 @@ https://github.com/younhajo88/seo-analysis
 ## Next Actions
 
 1. Recheck Search Console sitemap status after Google retries processing.
-2. After daily quota resets, request indexing for guide URLs.
+2. After Google indexing request quota resets, retry indexing requests for guide URLs.
 3. Configure Google OAuth client credentials for the future real GSC integration.
 4. Decide whether to enable live PageSpeed API calls or keep performance checks as explicit unavailable findings.
 5. Add a bounded multi-page crawl if click depth and orphan candidates should become automatic checks.
