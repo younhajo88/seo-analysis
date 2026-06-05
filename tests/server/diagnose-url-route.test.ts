@@ -191,4 +191,76 @@ describe("POST /diagnose/url", () => {
       status: "UNAVAILABLE"
     });
   });
+
+  it("uses connected Google data instead of GSC placeholders", async () => {
+    const app = buildApp({
+      databasePath: tempDbPath(),
+      assertSafeUrl: async (input) => new URL(input),
+      googleOAuth: {
+        clientId: "client-id.apps.googleusercontent.com",
+        clientSecret: "secret-value",
+        authUri: "https://accounts.google.com/o/oauth2/auth",
+        tokenUri: "https://oauth2.googleapis.com/token",
+        redirectUri: "http://127.0.0.1:4317/oauth/google/callback"
+      },
+      googleTokenExchange: async () => ({
+        accessToken: "access-token",
+        expiresAt: Date.now() + 3_600_000
+      }),
+      fetchImpl: async (url) => {
+        if (url.toString().includes("googleapis.com/webmasters/v3/sites/")) {
+          return new Response(JSON.stringify({ rows: [{ keys: ["seo analysis"], clicks: 1, impressions: 5 }] }), {
+            status: 200
+          });
+        }
+
+        if (url.toString().includes("googleapis.com/webmasters/v3/sites")) {
+          return new Response(JSON.stringify({ siteEntry: [{ siteUrl: "https://example.com/" }] }), { status: 200 });
+        }
+
+        if (url.toString().includes("urlInspection/index:inspect")) {
+          return new Response(
+            JSON.stringify({
+              inspectionResult: {
+                indexStatusResult: {
+                  coverageState: "Submitted and indexed",
+                  indexingState: "INDEXING_ALLOWED",
+                  robotsTxtState: "ALLOWED",
+                  pageFetchState: "SUCCESSFUL",
+                  googleCanonical: "https://example.com/",
+                  userCanonical: "https://example.com/"
+                }
+              }
+            }),
+            { status: 200 }
+          );
+        }
+
+        if (url.toString().endsWith("/robots.txt")) {
+          return new Response("User-agent: *\nAllow: /\nSitemap: https://example.com/sitemap.xml\n", { status: 200 });
+        }
+
+        if (url.toString().endsWith("/sitemap.xml")) {
+          return new Response("<urlset><url><loc>https://example.com/</loc></url></urlset>", { status: 200 });
+        }
+
+        return new Response("<html><head><title>Search visibility diagnosis</title><link rel=\"canonical\" href=\"https://example.com/\" /></head><body><h1>Search visibility diagnosis</h1><p>This page has crawlable content for diagnosis testing.</p></body></html>", { status: 200 });
+      }
+    });
+
+    await app.inject({ method: "GET", url: "/oauth/google/callback?code=abc" });
+    const response = await app.inject({ method: "POST", url: "/diagnose/url", payload: { url: "https://example.com/" } });
+    await app.close();
+
+    const body = response.json();
+
+    expect(body.findings.find((finding: { checkId: string }) => finding.checkId === "gsc.property_connected")).toMatchObject({
+      source: "gsc",
+      status: "PASS"
+    });
+    expect(body.findings.find((finding: { checkId: string }) => finding.checkId === "exposure.search_queries")).toMatchObject({
+      status: "PASS",
+      evidence: { queryCount: 1 }
+    });
+  });
 });

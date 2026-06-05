@@ -457,7 +457,20 @@ export function summarizeEvidence(evidence: Record<string, unknown>) {
     internalLinkCount: "내부 링크 수",
     checkedLinkCount: "확인한 링크 수",
     brokenLinkCount: "깨진 링크 수",
-    automated: "자동 진단"
+    automated: "자동 진단",
+    available: "사용 가능",
+    milliseconds: "밀리초",
+    score: "점수",
+    lighthouseInteractiveMs: "Lighthouse 상호작용 시간",
+    propertyConnected: "속성 연결",
+    coverageState: "색인 상태",
+    indexingState: "색인 허용 상태",
+    robotsTxtState: "robots.txt 상태",
+    pageFetchState: "페이지 가져오기 상태",
+    googleCanonical: "Google 선택 canonical",
+    userCanonical: "사용자 선언 canonical",
+    queryCount: "검색어 수",
+    topQueries: "상위 검색어"
   };
 
   return Object.entries(evidence)

@@ -356,6 +356,28 @@ main {
   color: var(--muted);
 }
 
+.integration-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 18px 0 4px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(240, 234, 223, 0.45);
+}
+
+.integration-card div {
+  display: grid;
+  gap: 2px;
+}
+
+.integration-card span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .diagnosis-error,
 .diagnosis-result {
   margin-top: 18px;
@@ -623,5 +645,10 @@ main {
   .finding-list li,
   .finding-evidence div {
     grid-template-columns: 1fr;
+  }
+
+  .integration-card {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }

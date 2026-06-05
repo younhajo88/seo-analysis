@@ -2,7 +2,11 @@ import { buildApp } from "./app";
 import { loadServerConfig } from "./config";
 
 const config = loadServerConfig();
-const app = buildApp({ allowedOrigins: config.allowedOrigins });
+const app = buildApp({
+  allowedOrigins: config.allowedOrigins,
+  googleOAuth: config.googleOAuth,
+  pageSpeedApiKey: config.pageSpeedApiKey
+});
 
 void main();
 

@@ -13,6 +13,11 @@ import {
   type DiagnosisApiFinding
 } from "@/lib/diagnosis-copy";
 import { requestUrlDiagnosis, type DiagnosisApiResponse } from "@/lib/diagnosis-client";
+import {
+  buildGoogleOAuthStartEndpoint,
+  requestGoogleIntegrationStatus,
+  type GoogleIntegrationStatus
+} from "@/lib/google-integration-client";
 
 export function BackendStatusPanel() {
   const [status, setStatus] = useState<BackendStatus>("checking");
@@ -21,6 +26,7 @@ export function BackendStatusPanel() {
   const [isRunning, setIsRunning] = useState(false);
   const [result, setResult] = useState<DiagnosisApiResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [googleStatus, setGoogleStatus] = useState<GoogleIntegrationStatus | null>(null);
 
   async function resolveBackendStatus(url = backendUrl) {
     try {
@@ -43,7 +49,22 @@ export function BackendStatusPanel() {
 
   async function checkBackend(url = backendUrl) {
     setStatus("checking");
-    setStatus(await resolveBackendStatus(url));
+    const nextStatus = await resolveBackendStatus(url);
+    setStatus(nextStatus);
+
+    if (canRunDiagnosis(nextStatus)) {
+      await refreshGoogleStatus(url);
+    } else {
+      setGoogleStatus(null);
+    }
+  }
+
+  async function refreshGoogleStatus(url = backendUrl) {
+    try {
+      setGoogleStatus(await requestGoogleIntegrationStatus(url));
+    } catch {
+      setGoogleStatus(null);
+    }
   }
 
   async function runDiagnosis(event: FormEvent<HTMLFormElement>) {
@@ -68,7 +89,13 @@ export function BackendStatusPanel() {
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      void resolveBackendStatus().then(setStatus);
+      void resolveBackendStatus().then((nextStatus) => {
+        setStatus(nextStatus);
+
+        if (canRunDiagnosis(nextStatus)) {
+          void refreshGoogleStatus();
+        }
+      });
     }, 0);
 
     return () => window.clearTimeout(timer);
@@ -91,6 +118,7 @@ export function BackendStatusPanel() {
         </div>
       </div>
       <p>{copy.description}</p>
+      {enabled ? <GoogleIntegrationCard backendUrl={backendUrl} status={googleStatus} /> : null}
 
       <form onSubmit={runDiagnosis}>
         <label className="field">
@@ -143,6 +171,43 @@ export function BackendStatusPanel() {
 
       {result ? <DiagnosisResult result={result} /> : null}
     </section>
+  );
+}
+
+function GoogleIntegrationCard({
+  backendUrl,
+  status
+}: {
+  backendUrl: string;
+  status: GoogleIntegrationStatus | null;
+}) {
+  const title = !status
+    ? "Google Search Console 상태 확인 중"
+    : status.connected
+      ? "Google Search Console 연결됨"
+      : status.configured
+        ? "Google Search Console 연결 필요"
+        : "Google OAuth 설정 필요";
+  const description = !status
+    ? "로컬 서버에서 Google 연동 상태를 확인하고 있습니다."
+    : status.connected
+      ? "다음 진단부터 실제 색인 상태와 노출 검색어를 함께 확인합니다."
+      : status.configured
+        ? "Search Console 데이터를 보려면 Google 계정 연결을 한 번 진행하세요."
+        : "로컬 서버에 OAuth client secret JSON이 필요합니다.";
+
+  return (
+    <div className="integration-card">
+      <div>
+        <strong>{title}</strong>
+        <span>{description}</span>
+      </div>
+      {status?.configured && !status.connected ? (
+        <a className="secondary-button" href={buildGoogleOAuthStartEndpoint(backendUrl)}>
+          Google 연결
+        </a>
+      ) : null}
+    </div>
   );
 }
 

@@ -37,7 +37,7 @@ The goal is to make it obvious:
 | Local backend implementation | DONE | Fastify, SQLite, health, CORS, URL safety, diagnosis API implemented and verified |
 | Local backend Phase 1 | DONE | Reachability, crawl policy, indexability, sitemap, page basics, structure, and unavailable placeholders implemented and verified |
 | Frontend diagnosis execution | DONE | `/diagnose` connects to local backend, submits URL, and renders results |
-| GSC API integration | IN_PROGRESS | Google Cloud OAuth consent configured; implementation not started |
+| GSC API integration | IN_PROGRESS | OAuth routes, local token session, URL Inspection, Search Analytics, and frontend connect state implemented; live user authorization still pending |
 
 ## Canonical URLs
 
@@ -185,23 +185,25 @@ https://github.com/younhajo88/seo-analysis
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| PageSpeed API configuration | DONE | Placeholder findings implemented; API execution deferred until credentials/config |
-| `perf.pagespeed_available` | DONE | `UNAVAILABLE` until PageSpeed API is configured |
-| `perf.lcp` | DONE | `UNAVAILABLE` until PageSpeed/CrUX data is configured |
-| `perf.inp` | DONE | `UNAVAILABLE` until PageSpeed/CrUX data is configured |
-| `perf.cls` | DONE | `UNAVAILABLE` until PageSpeed/CrUX data is configured |
-| `perf.lighthouse_seo` | DONE | `UNAVAILABLE` until PageSpeed API is configured |
-| `perf.lighthouse_accessibility` | DONE | `UNAVAILABLE` until PageSpeed API is configured |
+| PageSpeed API configuration | DONE | Live PageSpeed request implemented; optional `PAGESPEED_API_KEY`; falls back to unavailable findings on API failure |
+| `perf.pagespeed_available` | DONE | Uses live PageSpeed result when available |
+| `perf.lcp` | DONE | Uses Lighthouse LCP when PageSpeed result is available |
+| `perf.inp` | DONE | Uses Lighthouse interactive timing as a lab proxy until field INP is available |
+| `perf.cls` | DONE | Uses Lighthouse CLS when PageSpeed result is available |
+| `perf.lighthouse_seo` | DONE | Uses live Lighthouse SEO score when PageSpeed result is available |
+| `perf.lighthouse_accessibility` | DONE | Uses live Lighthouse accessibility score when PageSpeed result is available |
 
 ### Phase 11: Google Search Console API
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| GSC OAuth design | IN_PROGRESS | Google Cloud project `seo-analysis-local`; test user and Search Console readonly scope configured |
-| property selection | DONE | Reported as `UNAVAILABLE` until a verified property is connected |
-| URL Inspection API | DONE | Placeholder findings implemented until OAuth/property is connected |
-| Search Analytics API | DONE | Placeholder findings implemented until OAuth/property is connected |
-| target keyword vs actual query comparison | DONE | Placeholder `exposure.search_queries` implemented until Search Analytics data is connected |
+| GSC OAuth design | DONE | Google Cloud project `seo-analysis-local`; test user, Search Console readonly scope, and local Web client JSON configured |
+| OAuth start/callback routes | DONE | `server/app.ts`, `server/services/google-oauth.ts` |
+| Google integration status route | DONE | `GET /integrations/google/status` |
+| property selection | DONE | Selects a matching URL-prefix or domain property from Search Console sites list |
+| URL Inspection API | DONE | Calls `urlInspection/index:inspect` after Google OAuth connection |
+| Search Analytics API | DONE | Calls Search Analytics query for recent query exposure after Google OAuth connection |
+| target keyword vs actual query comparison | DONE | Reports top query exposure rows; explicit keyword comparison remains a future UI/report enhancement |
 
 ### Phase 12: Unavailable/Paid/Human Findings
 
@@ -215,8 +217,8 @@ https://github.com/younhajo88/seo-analysis
 
 1. Recheck Search Console sitemap status after Google retries processing.
 2. After Google indexing request quota resets, retry indexing requests for guide URLs.
-3. Configure Google OAuth client credentials for the future real GSC integration.
-4. Decide whether to enable live PageSpeed API calls or keep performance checks as explicit unavailable findings.
+3. Authorize Google Search Console from the local `/diagnose` page and run a live diagnosis.
+4. Optionally set `PAGESPEED_API_KEY` for more reliable PageSpeed requests.
 5. Add a bounded multi-page crawl if click depth and orphan candidates should become automatic checks.
 
 ## External Integration Setup Notes
@@ -231,6 +233,8 @@ Google Cloud setup observed on 2026-06-05:
 - Web OAuth client created with redirect URI `http://127.0.0.1:4317/oauth/google/callback`.
 - OAuth client JSON was downloaded locally and confirmed to contain a Web client, client secret, token URI, and the expected redirect URI.
 - OAuth secret JSON is intentionally ignored by Git. Do not commit OAuth secrets; store them in local env only.
+- Local server now auto-detects `client_secret_*.json` in the project root unless `GOOGLE_OAUTH_CLIENT_SECRET_FILE` is set.
+- Frontend `/diagnose` shows Google connection status and links to `/oauth/google/start`.
 
 ## Latest Verification
 
