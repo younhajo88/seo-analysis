@@ -8,6 +8,9 @@ coverage/
 .env
 .env.*
 !.env.example
+client_secret_*.json
+credentials*.json
+google-oauth*.json
 
 .next-dev.*.log
 npm-debug.log*

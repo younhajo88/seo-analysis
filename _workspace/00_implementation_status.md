@@ -229,7 +229,8 @@ Google Cloud setup observed on 2026-06-05:
 - Test user added: project owner account.
 - OAuth data access includes `https://www.googleapis.com/auth/webmasters.readonly`.
 - Web OAuth client created with redirect URI `http://127.0.0.1:4317/oauth/google/callback`.
-- Client ID was visible in Google Cloud Console, but client secret was not exposed in the current Auth Platform detail view. Do not commit OAuth secrets; store them in local env only.
+- OAuth client JSON was downloaded locally and confirmed to contain a Web client, client secret, token URI, and the expected redirect URI.
+- OAuth secret JSON is intentionally ignored by Git. Do not commit OAuth secrets; store them in local env only.
 
 ## Latest Verification
 
