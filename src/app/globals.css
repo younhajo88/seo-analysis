@@ -392,7 +392,7 @@ main {
 
 .result-summary {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin: 0;
 }
@@ -439,6 +439,61 @@ main {
   gap: 10px;
   padding: 12px 0;
   border-top: 1px solid var(--line);
+}
+
+.finding-body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.finding-body p {
+  margin: 0;
+}
+
+.finding-body b {
+  color: var(--ink);
+}
+
+.finding-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.finding-meta span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.finding-evidence {
+  display: grid;
+  gap: 4px;
+  margin: 4px 0 0;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(240, 234, 223, 0.55);
+}
+
+.finding-evidence div {
+  display: grid;
+  grid-template-columns: minmax(86px, auto) 1fr;
+  gap: 8px;
+  min-width: 0;
+}
+
+.finding-evidence dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.finding-evidence dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.82rem;
 }
 
 .finding-status {
@@ -559,5 +614,14 @@ main {
 
   .metric-strip div:last-child {
     border-bottom: 0;
+  }
+
+  .result-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .finding-list li,
+  .finding-evidence div {
+    grid-template-columns: 1fr;
   }
 }

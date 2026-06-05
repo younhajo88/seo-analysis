@@ -1,9 +1,4 @@
-export type BackendStatus =
-  | "checking"
-  | "connected"
-  | "disconnected"
-  | "misconfigured"
-  | "error";
+export type BackendStatus = "checking" | "connected" | "disconnected" | "misconfigured" | "error";
 
 export const defaultBackendUrl = "http://localhost:4317";
 
@@ -28,12 +23,12 @@ export const backendStatusCopy: Record<
   disconnected: {
     title: "로컬 진단 서버가 필요합니다",
     description:
-      "공개 페이지는 계속 볼 수 있지만, 실제 URL 크롤링과 Search Console 조회는 사용자 PC에서 로컬 진단 서버가 실행 중일 때만 가능합니다.",
+      "공개 페이지는 계속 볼 수 있지만 실제 URL 크롤링과 Search Console 조회는 사용자 PC에서 로컬 진단 서버가 실행 중일 때만 가능합니다.",
     actionLabel: "로컬 진단 서버 연결 필요"
   },
   misconfigured: {
     title: "서버 주소를 확인해 주세요",
-    description: "설정한 로컬 진단 서버 주소가 올바르지 않거나 지원 버전과 맞지 않습니다.",
+    description: "입력한 로컬 진단 서버 주소가 올바르지 않거나 지원하는 응답 형식과 맞지 않습니다.",
     actionLabel: "설정 확인 필요"
   },
   error: {

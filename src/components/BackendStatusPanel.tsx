@@ -2,12 +2,16 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { Cable, CircleCheck, CircleOff, RefreshCw, Search, ServerCrash } from "lucide-react";
+import { backendStatusCopy, canRunDiagnosis, defaultBackendUrl, type BackendStatus } from "@/lib/backend-status";
 import {
-  backendStatusCopy,
-  canRunDiagnosis,
-  defaultBackendUrl,
-  type BackendStatus
-} from "@/lib/backend-status";
+  getCategoryLabel,
+  getFindingCopy,
+  getSeverityLabel,
+  getStatusCopy,
+  summarizeEvidence,
+  translateLimitation,
+  type DiagnosisApiFinding
+} from "@/lib/diagnosis-copy";
 import { requestUrlDiagnosis, type DiagnosisApiResponse } from "@/lib/diagnosis-client";
 
 export function BackendStatusPanel() {
@@ -122,9 +126,9 @@ export function BackendStatusPanel() {
 
       {!enabled ? (
         <div className="disabled-note">
-          <strong>진단은 아직 실행되지 않았습니다.</strong>
+          <strong>진단은 아직 실행할 수 없습니다.</strong>
           <span>
-            공개 페이지는 검색엔진이 읽을 수 있지만, URL 크롤링과 GSC 조회는 로컬 백엔드가 연결된 뒤에만
+            공개 페이지는 검색엔진이 읽을 수 있지만 URL 크롤링과 Search Console 조회는 로컬 백엔드가 연결된 뒤에만
             시작됩니다.
           </span>
         </div>
@@ -143,13 +147,17 @@ export function BackendStatusPanel() {
 }
 
 function DiagnosisResult({ result }: { result: DiagnosisApiResponse }) {
+  const overall = getStatusCopy(result.run.overallStatus);
+
   return (
     <div className="diagnosis-result" aria-live="polite">
       <div className="result-heading">
         <Search size={18} />
         <div>
           <strong>진단 결과 #{result.run.id}</strong>
-          <span>최종 상태: {result.run.overallStatus}</span>
+          <span>
+            최종 상태: {overall.label} · {overall.description}
+          </span>
         </div>
       </div>
 
@@ -159,16 +167,24 @@ function DiagnosisResult({ result }: { result: DiagnosisApiResponse }) {
           <dd>{result.fetch.statusCode}</dd>
         </div>
         <div>
-          <dt>PASS</dt>
+          <dt>통과</dt>
           <dd>{result.run.summary.PASS}</dd>
         </div>
         <div>
-          <dt>WARN</dt>
+          <dt>주의</dt>
           <dd>{result.run.summary.WARN}</dd>
         </div>
         <div>
-          <dt>FAIL</dt>
+          <dt>실패</dt>
           <dd>{result.run.summary.FAIL}</dd>
+        </div>
+        <div>
+          <dt>수동 확인</dt>
+          <dd>{result.run.summary.MANUAL}</dd>
+        </div>
+        <div>
+          <dt>진단 불가</dt>
+          <dd>{result.run.summary.UNAVAILABLE}</dd>
         </div>
       </dl>
 
@@ -191,15 +207,51 @@ function DiagnosisResult({ result }: { result: DiagnosisApiResponse }) {
 
       <ul className="finding-list">
         {result.findings.map((finding) => (
-          <li key={finding.checkId}>
-            <span className={`finding-status status-${finding.status.toLowerCase()}`}>{finding.status}</span>
-            <div>
-              <strong>{finding.checkId}</strong>
-              <p>{finding.recommendation}</p>
-            </div>
-          </li>
+          <FindingItem key={finding.checkId} finding={finding} />
         ))}
       </ul>
     </div>
+  );
+}
+
+function FindingItem({ finding }: { finding: DiagnosisApiFinding }) {
+  const status = getStatusCopy(finding.status);
+  const copy = getFindingCopy(finding);
+  const limitation = translateLimitation(finding.limitation);
+  const evidence = summarizeEvidence(finding.evidence);
+
+  return (
+    <li>
+      <span className={`finding-status status-${finding.status.toLowerCase()}`}>{status.label}</span>
+      <div className="finding-body">
+        <div className="finding-meta">
+          <span>{getCategoryLabel(finding.category)}</span>
+          <span>{getSeverityLabel(finding.severity)}</span>
+        </div>
+        <strong>{copy.title}</strong>
+        <p>{copy.meaning}</p>
+        <p>
+          <b>권장 조치:</b> {finding.status === "PASS" ? "별도 조치가 필요하지 않습니다." : copy.action}
+        </p>
+        {limitation ? (
+          <p>
+            <b>제한:</b> {limitation}
+          </p>
+        ) : null}
+        {evidence.length > 0 ? (
+          <dl className="finding-evidence">
+            {evidence.map((item) => {
+              const [label, ...value] = item.split(": ");
+              return (
+                <div key={item}>
+                  <dt>{label}</dt>
+                  <dd>{value.join(": ")}</dd>
+                </div>
+              );
+            })}
+          </dl>
+        ) : null}
+      </div>
+    </li>
   );
 }
