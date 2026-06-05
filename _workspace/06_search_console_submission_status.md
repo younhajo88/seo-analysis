@@ -53,6 +53,7 @@ Interpretation:
 - The sitemap file is publicly reachable and valid-looking from external checks.
 - Search Console may need time to retry processing.
 - Recheck the Sitemaps report later before changing the sitemap implementation.
+- URL Inspection for the root URL currently reports no detected referring sitemap. This does not block indexing by itself, but it means Google has not associated the indexed root URL with the submitted sitemap in the visible inspection data yet.
 
 ## URL Inspection And Indexing Requests
 
@@ -60,8 +61,25 @@ Completed:
 
 | URL | Current Search Console State | Live Test | Indexing Request |
 | --- | --- | --- | --- |
-| `https://seo-analysis-two.vercel.app/` | URL is on Google | URL can be indexed | Requested |
+| `https://seo-analysis-two.vercel.app/` | URL is on Google; page indexed | URL can be indexed | Requested |
 | `https://seo-analysis-two.vercel.app/diagnose` | Pending recheck | URL can be indexed | Requested |
+
+Root URL inspection details observed on 2026-06-05:
+
+```text
+URL is on Google
+Page is indexed
+Sitemaps: No detected referring sitemaps
+Referring page: https://seo-analysis-two.vercel.app/diagnose
+Last crawl: 2026-06-04 22:55:54
+Crawler: Googlebot smartphone
+Crawl allowed: Yes
+Page fetch: Successful
+Indexing allowed: Yes
+User-declared canonical: https://seo-analysis-two.vercel.app/
+Google-selected canonical: Inspected URL
+HTTPS: Page served over HTTPS
+```
 
 Checked but not requested due to quota:
 
@@ -80,7 +98,8 @@ Daily quota exceeded. Please submit again tomorrow.
 Interpretation:
 
 - The Search Console property is accessible and authenticated.
-- The root URL is now registered in Google.
+- The root URL is now registered in Google and indexed.
+- Google currently reports the root URL's referring page as `/diagnose`, not the submitted sitemap.
 - The guide URL is still known as not indexed.
 - The indexing request quota had not reset for this property/account at the time of the 2026-06-05 retry.
 - The quota reset may not follow the user's local Asia/Seoul calendar day.
