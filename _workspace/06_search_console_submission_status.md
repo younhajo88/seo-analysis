@@ -58,10 +58,10 @@ Interpretation:
 
 Completed:
 
-| URL | Live Test | Indexing Request |
-| --- | --- | --- |
-| `https://seo-analysis-two.vercel.app/` | URL can be indexed | Requested |
-| `https://seo-analysis-two.vercel.app/diagnose` | URL can be indexed | Requested |
+| URL | Current Search Console State | Live Test | Indexing Request |
+| --- | --- | --- | --- |
+| `https://seo-analysis-two.vercel.app/` | URL is on Google | URL can be indexed | Requested |
+| `https://seo-analysis-two.vercel.app/diagnose` | Pending recheck | URL can be indexed | Requested |
 
 Checked but not requested due to quota:
 
@@ -80,6 +80,7 @@ Daily quota exceeded. Please submit again tomorrow.
 Interpretation:
 
 - The Search Console property is accessible and authenticated.
+- The root URL is now registered in Google.
 - The guide URL is still known as not indexed.
 - The indexing request quota had not reset for this property/account at the time of the 2026-06-05 retry.
 - The quota reset may not follow the user's local Asia/Seoul calendar day.

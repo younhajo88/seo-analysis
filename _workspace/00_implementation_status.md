@@ -33,7 +33,7 @@ The goal is to make it obvious:
 | Public frontend SEO | DONE | metadata, sitemap, robots, canonical, JSON-LD, icons, OG image, manifest |
 | Search Console verification | DONE | HTML verification file deployed and property verified by user |
 | Search Console sitemap | IN_PROGRESS | Submitted, but Search Console currently shows `Could not fetch` despite public 200 XML |
-| Search Console URL indexing requests | IN_PROGRESS | `/` and `/diagnose` requested; guide URL retry on 2026-06-05 still blocked by daily quota |
+| Search Console URL indexing requests | IN_PROGRESS | `/` is registered in Google; `/diagnose` requested; guide URL retry on 2026-06-05 still blocked by daily quota |
 | Local backend implementation | DONE | Fastify, SQLite, health, CORS, URL safety, diagnosis API implemented and verified |
 | Local backend Phase 1 | DONE | Reachability, crawl policy, indexability, sitemap, page basics, structure, and unavailable placeholders implemented and verified |
 | Frontend diagnosis execution | DONE | `/diagnose` connects to local backend, submits URL, and renders results |
@@ -91,7 +91,7 @@ https://github.com/younhajo88/seo-analysis
 | Property verification | DONE | User confirmed submission/verification |
 | sitemap submitted | IN_PROGRESS | `_workspace/06_search_console_submission_status.md` |
 | sitemap accepted by Search Console | BLOCKED | Search Console shows `Could not fetch`; public fetch is 200 |
-| `/` URL Inspection live test | DONE | URL can be indexed |
+| `/` URL Inspection live test | DONE | URL is registered in Google |
 | `/` indexing request | DONE | Requested |
 | `/diagnose` URL Inspection live test | DONE | URL can be indexed |
 | `/diagnose` indexing request | DONE | Requested |
