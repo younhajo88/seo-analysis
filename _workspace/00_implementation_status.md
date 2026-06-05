@@ -37,7 +37,7 @@ The goal is to make it obvious:
 | Local backend implementation | DONE | Fastify, SQLite, health, CORS, URL safety, diagnosis API implemented and verified |
 | Local backend Phase 1 | DONE | Reachability, crawl policy, indexability, sitemap, page basics, structure, and unavailable placeholders implemented and verified |
 | Frontend diagnosis execution | DONE | `/diagnose` connects to local backend, submits URL, and renders results |
-| GSC API integration | PLANNED | Later phase after local checks |
+| GSC API integration | IN_PROGRESS | Google Cloud OAuth consent configured; implementation not started |
 
 ## Canonical URLs
 
@@ -197,7 +197,7 @@ https://github.com/younhajo88/seo-analysis
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| GSC OAuth design | PLANNED | Requires Google OAuth client setup |
+| GSC OAuth design | IN_PROGRESS | Google Cloud project `seo-analysis-local`; test user and Search Console readonly scope configured |
 | property selection | DONE | Reported as `UNAVAILABLE` until a verified property is connected |
 | URL Inspection API | DONE | Placeholder findings implemented until OAuth/property is connected |
 | Search Analytics API | DONE | Placeholder findings implemented until OAuth/property is connected |
@@ -218,6 +218,18 @@ https://github.com/younhajo88/seo-analysis
 3. Configure Google OAuth client credentials for the future real GSC integration.
 4. Decide whether to enable live PageSpeed API calls or keep performance checks as explicit unavailable findings.
 5. Add a bounded multi-page crawl if click depth and orphan candidates should become automatic checks.
+
+## External Integration Setup Notes
+
+Google Cloud setup observed on 2026-06-05:
+
+- Project: `seo-analysis-local`.
+- Search Console API and PageSpeed Insights API were reported by the user as enabled.
+- OAuth app audience is `External` and `Testing`.
+- Test user added: project owner account.
+- OAuth data access includes `https://www.googleapis.com/auth/webmasters.readonly`.
+- Web OAuth client created with redirect URI `http://127.0.0.1:4317/oauth/google/callback`.
+- Client ID was visible in Google Cloud Console, but client secret was not exposed in the current Auth Platform detail view. Do not commit OAuth secrets; store them in local env only.
 
 ## Latest Verification
 
